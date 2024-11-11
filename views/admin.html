@@ -23,13 +23,16 @@
                         <button class="btn btn-${task.task_status ? 'success' : 'danger ms-2'}">
                             ${task.status ? 'Верно' : 'Неверно'}
                         </button>
-                        <form action="/tasks" method="POST">
-                            <input type="text" id="textInput" name="textInput">
-                                <span>Ваш текст здесь</span>
+                        <form action="/tasks/${task.id}" method="PUT">
                             <div class="mb-3">
-                                <input type="text" name="title" id="title" class="form-control" required>
+                                <label for="title" class="form-label">Текст задачи</label>
+                                <input type="text" name="task_text" id="task_text" value="${task.task_text}" class="form-control" required>
                             </div>
-                            <button type="submit" class="btn btn-primary">Отправить ответ</button>
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Ответ</label>
+                                <input type="text" name="answer" id="answer" value="${task.answer}" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Изменить</button>
                         </form>
                     </div>
                 `;
@@ -37,20 +40,31 @@
             });
         }
 
-        async function undoTask(id) {
-            await fetch(`/tasks/undo/${id}`, { method: 'DELETE' });
-            loadDoneTasks();
+        async function createTask(id, newTaskText, newAnswer) {
+            await fetch(`/tasks/${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ task_text: newTaskText, answer: newAnswer })
+            });
+            loadTasks();
         }
 
-        async function toggleTaskStatus(id, newStatus) {
-            await fetch(`/tasks/${id}/status`, {
+        async function editTask(id, newTaskText, newAnswer) {
+            await fetch(`/tasks/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ status: newStatus })
+                body: JSON.stringify({ task_text: newTaskText, answer: newAnswer })
             });
-            loadDoneTasks();
+            loadTasks();
+        }
+
+        async function deleteTask(id) {
+            await fetch(`/tasks/${id}`, { method: 'DELETE' });
+            loadTasks();
         }
 
         window.onload = loadTasks;
@@ -58,12 +72,12 @@
 </head>
 <body class="bg-light">
     <div class="container mt-5">
-        <h1 class="mb-4">Личный кабинет</h1>
+        <h1 class="mb-4">Админ-панель</h1>
         
         <div class="row">
             <div class="col-lg-6">
                 <h2>Все задачи:</h2>
-                <div id="doneTaskList" class="list-group">
+                <div id="TaskList" class="list-group">
                 </div>
             </div>
             

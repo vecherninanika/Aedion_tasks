@@ -11,7 +11,7 @@
             const response = await fetch('/tasks/done');
             const doneTasks = await response.json();
             const doneTaskList = document.getElementById('doneTaskList');
-            doneTaskList.innerHTML = ''; 
+            doneTaskList.innerHTML = '<h4>text</h4>'; 
 
             doneTasks.forEach(task => {
                 const taskItem = document.createElement('div');
@@ -29,6 +29,14 @@
             });
         }
 
+        async function undoTask(id) {
+            await fetch(`/tasks/${id}/undo`, { method: 'DELETE' });
+            loadDoneTasks();
+        }
+
+        window.onload = loadDoneTasks;
+    </script>
+    <script>
         async function loadTasks() {
             const response = await fetch('/tasks/todo');
             const tasks = await response.json();
@@ -53,12 +61,6 @@
             });
         }
 
-        async function undoTask(id) {
-            await fetch(`/tasks/${id}/undo`, { method: 'DELETE' });
-            loadDoneTasks();
-        }
-
-        window.onload = loadDoneTasks;      // не работает так
         window.onload = loadTasks;
     </script>
 </head>

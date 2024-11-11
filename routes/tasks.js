@@ -56,9 +56,7 @@ router.get('/tasks/todo', checkAuth, async (req, res) => {
 router.get('/tasks/done', checkAuth, async (req, res) => {
     const user = req.session.user;
     try {
-        const userIdQuery = await pool.query('SELECT id FROM users WHERE username = $1', [user]);
-        const userId = userIdQuery.rows[0].id;
-        const user_tasks = await pool.query('SELECT t.task_text, t.answer, ut.task_status FROM user_to_task ut JOIN users u ON ut.user_id = u.id JOIN tasks t ON ut.task_id = t.id where u.username="$1";', [user]);
+        const user_tasks = await pool.query('SELECT t.task_text, t.answer, ut.task_status FROM user_to_task ut JOIN users u ON ut.user_id = u.id JOIN tasks t ON ut.task_id = t.id where u.username=$1;', [user]);
         res.json(user_tasks.rows);
     } catch (err) {
         console.error(err);
@@ -67,15 +65,10 @@ router.get('/tasks/done', checkAuth, async (req, res) => {
 });
 
 router.post('/tasks', checkAuth, async (req, res) => {
-    const { title, description } = req.body;
-    const user = req.session.user;
-
+    const { task_text, answer } = req.body;
     try {
-        const userIdQuery = await pool.query('SELECT id FROM users WHERE username = $1', [user]);
-        const userId = userIdQuery.rows[0].id;
-        await pool.query('INSERT INTO tasks (title, answer) VALUES ($1, $2)', [title, description]);
-        // TODO insert into user_to_task
-        res.redirect('/dashboard');
+        await pool.query('INSERT INTO tasks (task_text, answer) VALUES ($1, $2)', [task_text, answer]);
+        res.redirect('/admin');
     } catch (err) {
         console.error(err);
         res.send('Ошибка при добавлении задачи.');
@@ -92,8 +85,8 @@ router.post('/tasks/:id/answer', checkAuth, async (req, res) => {
         const userId = userIdQuery.rows[0].id;
         const taskAnswerQuery = await pool.query('SELECT id FROM users WHERE username = $1', [user]);
         const taskAnswer = taskAnswerQuery.rows[0].answer;
-        const task_status = taskAnswer == answer ? 1 : 0;
-        await pool.query('INSERT INTO user_to_task (user_id, task_id, task_status) VALUES ($1, $2, $3);', [userId, id, task_status]);
+        const taskStatus = taskAnswer == answer ? 1 : 0;
+        await pool.query('INSERT INTO user_to_task (user_id, task_id, task_status) VALUES ($1, $2, $3);', [userId, id, taskStatus]);
         res.redirect('/dashboard');
     } catch (err) {
         console.error(err);
@@ -103,36 +96,13 @@ router.post('/tasks/:id/answer', checkAuth, async (req, res) => {
 
 router.put('/tasks/:id', checkAuth, async (req, res) => {
     const { id } = req.params;
-    const { title, description, status } = req.body;
+    const { task_text, answer } = req.body;
     try {
-        await pool.query('UPDATE tasks SET title = $1, answer = $2, status = $3 WHERE id = $4', [title, description, status, id]);
+        await pool.query('UPDATE tasks SET task_text = $1, answer = $2 WHERE id = $4', [task_text, answer, id]);
         res.send('Задача обновлена.');
     } catch (err) {
         console.error(err);
         res.send('Ошибка при обновлении задачи.');
-    }
-});
-
-router.put('/tasks/:id/status', checkAuth, async (req, res) => {
-    const { id } = req.params;
-    const { status } = req.body;
-    try {
-        await pool.query('UPDATE tasks SET status = $1 WHERE id = $2', [status, id]);
-        res.send('Статус задачи обновлен.');
-    } catch (err) {
-        console.error(err);
-        res.send('Ошибка при обновлении статуса задачи.');
-    }
-});
-
-router.delete('/tasks/:id/undo', checkAuth, async (req, res) => {
-    const { id } = req.params;
-    try {
-        await pool.query('DELETE FROM user_to_task WHERE task_id = $1', [id]);
-        res.send('Задача удалена из выполненных задач пользователя.');
-    } catch (err) {
-        console.error(err);
-        res.send('Ошибка при удалении задачи из выполненных.');
     }
 });
 
@@ -147,7 +117,19 @@ router.delete('/tasks/:id', checkAuth, async (req, res) => {
     }
 });
 
+router.delete('/tasks/:id/undo', checkAuth, async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query('DELETE FROM user_to_task WHERE task_id = $1', [id]);
+        res.send('Задача удалена из выполненных задач пользователя.');
+    } catch (err) {
+        console.error(err);
+        res.send('Ошибка при удалении задачи из выполненных.');
+    }
+});
+
 export default router;
 
 // admin can edit
 // edit profile
+// postman
