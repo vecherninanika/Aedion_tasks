@@ -64,6 +64,14 @@ router.get('/dashboard', (req, res) => {
     }
 });
 
+router.get('/admin', (req, res) => {
+    if (req.session.user) {
+        res.sendFile(path.join(__dirname, '../views/admin.html'));
+    } else {
+        res.redirect('/login');
+    }
+});
+
 router.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/login');

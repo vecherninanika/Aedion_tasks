@@ -15,7 +15,6 @@ CREATE TABLE tasks (
     answer VARCHAR
 );
 
--- DROP TABLE user_to_task;
 
 CREATE TABLE user_to_task (
     user_id INT NOT NULL,
@@ -30,19 +29,27 @@ CREATE TABLE user_to_task (
 -- delete from tasks;
 
 
-INSERT INTO users (username, full_name, personal_info, password, role)
-VALUES ('suon', 'new name', 'info', '123', 'user');
+-- INSERT INTO users (username, full_name, personal_info, password, role)
+-- VALUES ('suon', 'new name', 'info', '123', 'user');
 -- ('anresu', 'Анна Иванова', 'Информацаия какая-то', '321', 'user'),
 -- ('admin', 'Иван Иванов', 'Информацаия какая-то', '123', 'admin');
 
 -- INSERT INTO tasks (task_text, answer)
--- VALUES ('Найдите площадь квадрата, если его диагональ равна 5', '12,5'),
+-- VALUES ('Сколько часов осталось писать код, если можно писать его сутки, а ты уже писала 8 часов?', '4');
 -- ('Найдите площадь равнобедренного треугольника, если его боковая сторона равна 5, а высота к основанию равна 4', '12');
 
--- SELECT s.name, c.title
--- FROM user_to_task ut
--- JOIN users s ON ut.user_id = s.id
--- JOIN tasks t ON ut.task_id = t.id;
+-- SELECT t.task_text, t.answer, ut.task_status FROM user_to_task ut JOIN users u ON ut.user_id = u.id JOIN tasks t ON ut.task_id = t.id where u.username=$1;
 
--- INSERT INTO user_to_task
--- VALUES (1, 1, 0);
+-- SELECT t.*
+-- FROM tasks t
+-- LEFT JOIN user_to_task ut ON t.id = ut.task_id AND ut.user_id = specific_user_id
+-- WHERE ut.task_id IS NULL;
+
+select * from users;
+select * from tasks;
+INSERT INTO user_to_task (user_id, task_id, task_status)
+VALUES 
+(10, 1, 0),
+(10, 2, 1),
+(10, 3, 0),
+(10, 4, 1);
