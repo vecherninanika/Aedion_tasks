@@ -20,16 +20,7 @@ function checkAuth(req, res, next) {
     }
 }
 
-router.get('/role', checkAuth, async (req, res) => {
-    const user = req.session.user;
-    try {
-        const userRoleQuery = await pool.query('SELECT id FROM users WHERE username = $1', [user]);
-        res.json(userRoleQuery);
-    } catch (err) {
-        console.error(err);
-    }
-});
-
+// admin
 router.get('/tasks', checkAuth, async (req, res) => {
     try {
         const all_tasks = await pool.query('SELECT * FROM tasks;');
@@ -64,6 +55,7 @@ router.get('/tasks/done', checkAuth, async (req, res) => {
     }
 });
 
+// admin
 router.post('/tasks', checkAuth, async (req, res) => {
     const { task_text, answer } = req.body;
     try {
@@ -79,11 +71,10 @@ router.post('/tasks/:id/answer', checkAuth, async (req, res) => {
     const { answer } = req.body;
     const { id } = req.params;
     const user = req.session.user;
-
     try {
         const userIdQuery = await pool.query('SELECT id FROM users WHERE username = $1', [user]);
         const userId = userIdQuery.rows[0].id;
-        const taskAnswerQuery = await pool.query('SELECT id FROM users WHERE username = $1', [user]);
+        const taskAnswerQuery = await pool.query('SELECT answer FROM tasks WHERE id = $1', [id]);
         const taskAnswer = taskAnswerQuery.rows[0].answer;
         const taskStatus = taskAnswer == answer ? 1 : 0;
         await pool.query('INSERT INTO user_to_task (user_id, task_id, task_status) VALUES ($1, $2, $3);', [userId, id, taskStatus]);
@@ -94,11 +85,12 @@ router.post('/tasks/:id/answer', checkAuth, async (req, res) => {
     }
 });
 
+// admin
 router.put('/tasks/:id', checkAuth, async (req, res) => {
     const { id } = req.params;
     const { task_text, answer } = req.body;
     try {
-        await pool.query('UPDATE tasks SET task_text = $1, answer = $2 WHERE id = $4', [task_text, answer, id]);
+        await pool.query('UPDATE tasks SET task_text = $1, answer = $2 WHERE id = $3', [task_text, answer, id]);
         res.send('Задача обновлена.');
     } catch (err) {
         console.error(err);
@@ -106,6 +98,7 @@ router.put('/tasks/:id', checkAuth, async (req, res) => {
     }
 });
 
+// admin
 router.delete('/tasks/:id', checkAuth, async (req, res) => {
     const { id } = req.params;
     try {
@@ -130,6 +123,6 @@ router.delete('/tasks/:id/undo', checkAuth, async (req, res) => {
 
 export default router;
 
-// admin can edit
-// edit profile
-// postman
+// admin edit task - cannot GET tasks/3
+// undo - id is undefined
+// check that only admin can edit

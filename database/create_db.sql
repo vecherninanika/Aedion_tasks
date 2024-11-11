@@ -4,7 +4,6 @@ CREATE TABLE users (
     id serial PRIMARY KEY,
     username VARCHAR UNIQUE NOT NULL,
     full_name VARCHAR NOT NULL,
-    personal_info VARCHAR,
     password VARCHAR NOT NULL,
     role VARCHAR NOT NULL CHECK (role IN ('user', 'admin'))
 );
@@ -29,10 +28,10 @@ CREATE TABLE user_to_task (
 -- delete from tasks;
 
 
--- INSERT INTO users (username, full_name, personal_info, password, role)
--- VALUES ('suon', 'new name', 'info', '123', 'user');
--- ('anresu', 'Анна Иванова', 'Информацаия какая-то', '321', 'user'),
--- ('admin', 'Иван Иванов', 'Информацаия какая-то', '123', 'admin');
+-- INSERT INTO users (username, full_name, password, role)
+-- VALUES ('suon', 'new name', '123', 'user');
+-- ('anresu', 'Анна Иванова', '321', 'user'),
+-- ('admin', 'Иван Иванов', '123', 'admin');
 
 -- INSERT INTO tasks (task_text, answer)
 -- VALUES ('Сколько часов осталось писать код, если можно писать его сутки, а ты уже писала 8 часов?', '4');
@@ -45,11 +44,14 @@ CREATE TABLE user_to_task (
 -- LEFT JOIN user_to_task ut ON t.id = ut.task_id AND ut.user_id = specific_user_id
 -- WHERE ut.task_id IS NULL;
 
-select * from users;
-select * from tasks;
-INSERT INTO user_to_task (user_id, task_id, task_status)
-VALUES 
-(10, 1, 0),
-(10, 2, 1),
-(10, 3, 0),
-(10, 4, 1);
+-- select * from users;
+-- select * from tasks;
+-- INSERT INTO user_to_task (user_id, task_id, task_status)
+-- VALUES 
+-- (10, 1, 0),
+-- (10, 2, 1),
+-- (10, 3, 0),
+-- (10, 4, 1);
+
+-- ALTER TABLE users
+-- DROP COLUMN personal_info;

@@ -16,6 +16,8 @@ const pool = new Pool({
     port: 5433,
 });
 
+
+
 router.get('/register', (req, res) => {
     res.sendFile(path.join(__dirname, '../public/register.html'));
 });
@@ -71,6 +73,21 @@ router.get('/admin', (req, res) => {
         res.redirect('/login');
     }
 });
+
+// function checkRole(req, res, next) {
+//     const user = req.session.user;
+//     try {
+//         const userRoleQuery = pool.query('SELECT role FROM users WHERE username = $1', [user]);
+//         const userRole = userRoleQuery.rows[0].role;
+//         if (userRole === 'admin') {
+//             next();
+//         } else {
+//             res.redirect('/login');
+//         }
+//     } catch (err) {
+//         console.error(err);
+//     }
+// }
 
 router.get('/logout', (req, res) => {
     req.session.destroy();

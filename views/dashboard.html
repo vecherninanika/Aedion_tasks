@@ -42,10 +42,12 @@
                 taskItem.innerHTML = `
                     <div class="card-body">
                         <h5 class="card-title">${task.task_text}</h5>
-                        <p class="card-text">${task.answer}</p>
                         <button class="btn btn-${task.task_status ? 'success' : 'danger ms-2'}">
-                            ${task.status ? 'Верно' : 'Неверно'}
+                            ${task.answer}
                         </button>
+                        <p>
+                            <button class="btn btn-warning" onclick="undoTask(${task.id})">Отметить как невыполненную</button>
+                        </p>
                     </div>
                 `;
                 doneTaskList.appendChild(taskItem);
@@ -63,7 +65,6 @@
 <body class="bg-light">
     <div class="container mt-5">
         <h1 class="mb-4">Личный кабинет</h1>
-        
         <div class="row">
             <div class="col-lg-6">
                 <h2>Выполненные задачи:</h2>
