@@ -9,7 +9,14 @@
     
     <script>
         async function loadTasks() {
-            const response = await fetch('/tasks/todo');
+            const token = getTokenFromCookies();
+            
+            const response = await fetch('/tasks/todo', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
             const tasks = await response.json();
             const taskList = document.getElementById('taskList');
             taskList.innerHTML = '';
@@ -31,10 +38,16 @@
                 taskList.appendChild(taskItem);
             });
 
-            const doneResponse = await fetch('/tasks/done');
+            // const doneResponse = await fetch('/tasks/done');
+            const doneResponse = await fetch('/tasks/done', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
             const doneTasks = await doneResponse.json();
             const doneTaskList = document.getElementById('doneTaskList');
-            doneTaskList.innerHTML = ''; 
+            doneTaskList.innerHTML = '';
 
             doneTasks.forEach(task => {
                 const taskItem = document.createElement('div');
@@ -53,8 +66,19 @@
         }
 
         async function undoTask(id) {
-            await fetch(`/tasks/${id}/undo`, { method: 'DELETE' });
+            const token = getTokenFromCookies();
+            const response = await fetch(`/tasks/${id}/undo`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
             loadTasks();
+        }
+
+        function getTokenFromCookies() {
+            let cookie = document.cookie.split('; ').find(row => row.startsWith('token' + '='));
+            return cookie ? cookie.split('=')[1] : null;
         }
 
         window.onload = loadTasks;

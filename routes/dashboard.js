@@ -1,46 +1,49 @@
 import express from 'express';
 import { pool } from '../app.js'
-
+import path from 'path';
+import { fileURLToPath } from 'url';
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
-
-
-function checkAuth(req, res, next) {
-    if (req.session.user) {
-        next();
-    } else {
-        res.redirect('/login');
-    }
-}
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
-    if (authHeader == null) return res.sendStatus(401);
+
+    if (!authHeader) {
+        console.log(`Токена не хватает`);
+        return res.status(401).send('Токена не хватает');
+    }
 
     const token = authHeader.split(' ')[1];
 
-    jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
+    if (!token) {
+        console.log(`Токена не хватает`);
+        return res.status(401).send('Токена не хватает');
+    }
+
+    jwt.verify(token, process.env.TOKEN_SECRET, (err, data) => {
       if (err) {
-        console.log(err);
-        return res.sendStatus(403);
+        console.log('ERROR:', err.message);
+        return res.status(403).send(err.message);
       }
-      req.user = user;
       next();
     })
 }
 
 
-router.get('/dashboard', authenticateToken, (req, res) => {
+router.get('/dashboard', (req, res) => {
     if (req.session.user) {
         res.sendFile(path.join(__dirname, '../views/dashboard.html'));
     } else {
-        res.status(401).redirect('/login');
+        res.redirect('/login');
     }
 });
 
 
-router.get('/tasks/todo', checkAuth, authenticateToken, async (req, res) => {
+router.get('/tasks/todo', authenticateToken, async (req, res) => {
     const user = req.session.user;
     try {
         const tasks = await pool.query('SELECT t.* FROM tasks t LEFT JOIN user_to_task ut ON t.id = ut.task_id AND ut.user_id = $1 WHERE ut.task_id IS NULL;', [user.id]);
@@ -51,7 +54,7 @@ router.get('/tasks/todo', checkAuth, authenticateToken, async (req, res) => {
     }
 });
 
-router.get('/tasks/done', checkAuth, async (req, res) => {
+router.get('/tasks/done', authenticateToken, async (req, res) => {
     const user = req.session.user;
     try {
         const user_tasks = await pool.query('SELECT t.*, ut.task_status FROM user_to_task ut JOIN users u ON ut.user_id = u.id JOIN tasks t ON ut.task_id = t.id where u.username=$1;', [user.username]);
@@ -62,7 +65,7 @@ router.get('/tasks/done', checkAuth, async (req, res) => {
     }
 });
 
-router.post('/tasks/:id/answer', checkAuth, async (req, res) => {
+router.post('/tasks/:id/answer', authenticateToken, async (req, res) => {
     const { answer } = req.body;
     const { id } = req.params;
     const user = req.session.user;
@@ -79,7 +82,7 @@ router.post('/tasks/:id/answer', checkAuth, async (req, res) => {
 });
 
 
-router.delete('/tasks/:id/undo', checkAuth, async (req, res) => {
+router.delete('/tasks/:id/undo', authenticateToken, async (req, res) => {
     const { id } = req.params;
     try {
         await pool.query('DELETE FROM user_to_task WHERE task_id = $1', [id]);
@@ -94,7 +97,6 @@ export default router;
 
 
 
-// jwt
 // status does not work with redirect. how to test it if even unauthorized returns 302?
 // tests for bad things, like unauthorized
 // delete user after registration test
