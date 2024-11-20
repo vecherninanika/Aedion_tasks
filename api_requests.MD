@@ -37,13 +37,15 @@
 `GET http://localhost:3000/tasks`
 
 `POST http://localhost:3000/tasks`
+* Создать задачу
 * Body:
 {
     "task_text": "Найдите площадь квадрата, если его сторона равна 4",
     "answer": 16
 }
 
-`PUT http://localhost:3000/tasks/6`
+`POST http://localhost:3000/tasks/6`
+* Изменить задачу
 * Body:
 {
     "task_text": "Найдите площадь квадрата, если его сторона равна 4.",

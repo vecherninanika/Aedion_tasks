@@ -4,8 +4,8 @@
 
 ### Создание базы данных, заполнение тестовыми данными
 
-`chmod +x database/bd_commands.sh`
-`./database/bd_commands.sh`
+`chmod +x database/create_db.sh`
+`./database/create_db.sh`
 
 ### Запуск
 

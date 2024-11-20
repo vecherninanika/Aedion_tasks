@@ -45,9 +45,7 @@
                         <button class="btn btn-${task.task_status ? 'success' : 'danger ms-2'}">
                             ${task.answer}
                         </button>
-                        <p>
-                            <button class="btn btn-warning" onclick="undoTask(${task.id})">Отметить как невыполненную</button>
-                        </p>
+                        <button class="btn btn-warning" onclick="undoTask(${task.id})">Отметить как невыполненную</button>
                     </div>
                 `;
                 doneTaskList.appendChild(taskItem);
@@ -56,7 +54,7 @@
 
         async function undoTask(id) {
             await fetch(`/tasks/${id}/undo`, { method: 'DELETE' });
-            loadDoneTasks();
+            loadTasks();
         }
 
         window.onload = loadTasks;

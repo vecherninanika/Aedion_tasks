@@ -18,7 +18,7 @@
                 taskItem.className = 'card mb-3';
                 taskItem.innerHTML = `
                     <div class="card-body">
-                        <form action="/tasks/${task.id}" method="PUT">
+                        <form action="/tasks/${task.id}" method="POST">
                             <div class="mb-3">
                                 <label for="title" class="form-label">Текст задачи</label>
                                 <input type="text" name="task_text" id="task_text" value="${task.task_text}" class="form-control" required>
