@@ -27,11 +27,11 @@
                 taskItem.innerHTML = `
                     <div class="card-body">
                         <h5 class="card-title">${task.task_text}</h5>
-                        <form id="answerForm">
+                        <form id="answerForm" action="/tasks/${task.id}/answer" method="POST">
                             <div class="mb-3">
                                 <input type="text" name="answer" id="answer" class="form-control" required>
                             </div>
-                            <button class="btn btn-primary" onclick="answerToTask(${task.id})">Отправить ответ</button>
+                            <button type="submit" class="btn btn-primary">Отправить ответ</button>
                         </form>
                     </div>
                 `;
@@ -64,19 +64,20 @@
             });
         }
 
-        async function answerToTask(id) {
+        async function answerToTask() {
             document.getElementById('answerForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
                 const token = getTokenFromCookies();
                 
-                await fetch(`/tasks/${task.id}/answer`, {
+                await fetch(this.action, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`
                     },
                     body: new FormData(this)
                 });
+
             });
             loadTasks();
         }

@@ -81,7 +81,7 @@ router.get('/tasks/done', authenticateToken, async (req, res) => {
     }
 });
 
-router.post('/tasks/:id/answer', authenticateToken, async (req, res) => {
+router.post('/tasks/:id/answer', async (req, res) => {
     try {
         const { id } = req.params;
         const user = req.session.user;

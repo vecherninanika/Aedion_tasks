@@ -42,8 +42,8 @@ router.post('/register', async (req, res) => {
         await pool.query('INSERT INTO users (username, password, role) VALUES ($1, $2, $3)', [username, hashedPassword, role]);
         res.redirect('/login');
     } catch (err) {
-        console.error(err);
         res.status(400).send('Ошибка при регистрации.');
+        console.error(err);
     }
 });
 
