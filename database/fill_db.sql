@@ -1,17 +1,14 @@
--- drop table users, tasks, user_to_task;
-
 CREATE TABLE users (
     id serial PRIMARY KEY,
     username VARCHAR UNIQUE NOT NULL,
-    full_name VARCHAR NOT NULL,
     password VARCHAR NOT NULL,
     role VARCHAR NOT NULL CHECK (role IN ('user', 'admin'))
 );
 
 CREATE TABLE tasks (
     id serial PRIMARY KEY,
-    task_text VARCHAR,
-    answer VARCHAR
+    task_text VARCHAR UNIQUE NOT NULL,
+    answer VARCHAR NOT NULL
 );
 
 
@@ -24,34 +21,14 @@ CREATE TABLE user_to_task (
     FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
 );
 
--- delete from users;
--- delete from tasks;
+
+INSERT INTO users (username, password, role)
+VALUES ('admin', '$2b$10$zH2vsCTlfhiM6GEEeIylD.YDRiKXTM3t17GyJUMdG7AMmqrXVur.O', 'admin');
 
 
--- INSERT INTO users (username, full_name, password, role)
--- VALUES ('suon', 'new name', '123', 'user');
--- ('anresu', 'Анна Иванова', '321', 'user'),
--- ('admin', 'Иван Иванов', '123', 'admin');
-
--- INSERT INTO tasks (task_text, answer)
--- VALUES ('Сколько часов осталось писать код, если можно писать его сутки, а ты уже писала 8 часов?', '4');
--- ('Найдите площадь равнобедренного треугольника, если его боковая сторона равна 5, а высота к основанию равна 4', '12');
-
--- SELECT t.task_text, t.answer, ut.task_status FROM user_to_task ut JOIN users u ON ut.user_id = u.id JOIN tasks t ON ut.task_id = t.id where u.username=$1;
-
--- SELECT t.*
--- FROM tasks t
--- LEFT JOIN user_to_task ut ON t.id = ut.task_id AND ut.user_id = specific_user_id
--- WHERE ut.task_id IS NULL;
-
--- select * from users;
--- select * from tasks;
--- INSERT INTO user_to_task (user_id, task_id, task_status)
--- VALUES 
--- (10, 1, 0),
--- (10, 2, 1),
--- (10, 3, 0),
--- (10, 4, 1);
-
--- ALTER TABLE users
--- DROP COLUMN personal_info;
+INSERT INTO tasks (task_text, answer)
+VALUES
+('Сколько часов осталось писать код, если можно писать его сутки, а ты уже писала 8 часов?', '4'),
+('Решите уравнение: x + 5 = 12', '7'),
+('Если у нас 6 пар каждый день 3 недели, то сколько у нас пар в итоге-то получается?', '108'),
+('Найдите площадь равнобедренного треугольника, если его боковая сторона равна 5, а высота к основанию равна 4', '12');

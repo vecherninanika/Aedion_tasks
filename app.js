@@ -34,7 +34,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use(session({
-    secret: 'your-secret-key',
+    secret: process.env.TOKEN_SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: { maxAge: 600000 } // Сессия на 10 минут

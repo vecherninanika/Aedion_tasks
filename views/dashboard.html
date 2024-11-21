@@ -27,18 +27,17 @@
                 taskItem.innerHTML = `
                     <div class="card-body">
                         <h5 class="card-title">${task.task_text}</h5>
-                        <form action="/tasks/${task.id}/answer" method="POST">
+                        <form id="answerForm">
                             <div class="mb-3">
                                 <input type="text" name="answer" id="answer" class="form-control" required>
                             </div>
-                            <button type="submit" class="btn btn-primary">Отправить ответ</button>
+                            <button class="btn btn-primary" onclick="answerToTask(${task.id})">Отправить ответ</button>
                         </form>
                     </div>
                 `;
                 taskList.appendChild(taskItem);
             });
 
-            // const doneResponse = await fetch('/tasks/done');
             const doneResponse = await fetch('/tasks/done', {
                 method: 'GET',
                 headers: {
@@ -65,9 +64,26 @@
             });
         }
 
+        async function answerToTask(id) {
+            document.getElementById('answerForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const token = getTokenFromCookies();
+                
+                await fetch(`/tasks/${task.id}/answer`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: new FormData(this)
+                });
+            });
+            loadTasks();
+        }
+
         async function undoTask(id) {
             const token = getTokenFromCookies();
-            const response = await fetch(`/tasks/${id}/undo`, {
+            await fetch(`/tasks/${id}/undo`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`

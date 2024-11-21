@@ -2,27 +2,50 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import express from 'express';
 import { pool } from '../app.js'
+import jwt from 'jsonwebtoken';
 
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-function checkRole(req, res, next) {
-    const user = req.session.user;
-    if (!user || user.role !== 'admin') {
-        res.status(403).send('Доступ запрещен.');
-    } else {
-        next();
+
+function authenticateAdminToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+
+    if (!authHeader) {
+        console.error('Отсутствует header "Authorization"');
+        return res.status(401).send('Отсутствует header "Authorization"');
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    if (!token) {
+        console.error('Отсутствует токен');
+        return res.status(401).send('Отсутствует токен');
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+        if (decoded.role === 'admin') {
+            next();
+        } else {
+            console.error('Только администратор может просматривать эту страницу.');
+            return res.status(403).send('Только администратор может просматривать эту страницу.');
+        }
+    } catch (error) {
+        console.error('ERROR:', error.message);
+        return res.status(403).send(error.message);
     }
 }
 
-router.get('/admin', checkRole, (req, res) => {
+
+router.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, '../views/admin.html'));
 });
 
 
-router.get('/tasks', checkRole, async (req, res) => {
+router.get('/tasks', authenticateAdminToken, async (req, res) => {
     try {
         const all_tasks = await pool.query('SELECT * FROM tasks;');
         res.json(all_tasks.rows);
@@ -33,7 +56,7 @@ router.get('/tasks', checkRole, async (req, res) => {
 });
 
 
-router.post('/tasks', checkRole, async (req, res) => {
+router.post('/tasks', async (req, res) => {
     const { task_text, answer } = req.body;
     try {
         await pool.query('INSERT INTO tasks (task_text, answer) VALUES ($1, $2)', [task_text, answer]);
@@ -45,7 +68,7 @@ router.post('/tasks', checkRole, async (req, res) => {
 });
 
 
-router.post('/tasks/:id', checkRole, async (req, res) => {
+router.post('/tasks/:id', async (req, res) => {
     const { id } = req.params;
     const { task_text, answer } = req.body;
     try {
@@ -58,7 +81,7 @@ router.post('/tasks/:id', checkRole, async (req, res) => {
 });
 
 
-router.delete('/tasks/:id', checkRole, async (req, res) => {
+router.delete('/tasks/:id', authenticateAdminToken, async (req, res) => {
     const { id } = req.params;
     try {
         await pool.query('DELETE FROM tasks WHERE id = $1', [id]);
@@ -68,6 +91,7 @@ router.delete('/tasks/:id', checkRole, async (req, res) => {
         res.status(400).send('Ошибка при удалении задачи.');
     }
 });
+
 
 
 export default router;

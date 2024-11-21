@@ -35,19 +35,15 @@ router.get('/login', (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
-    const { username, full_name, password } = req.body;
+    const { username, password } = req.body;
     try {
-        const userCheck = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
-        if (userCheck.rows.length > 0) {
-            return res.status(400).send('Пользователь уже существует.');
-        }
         const role = 'user';
         const hashedPassword = await bcrypt.hash(password, 10);
-        await pool.query('INSERT INTO users (username, full_name, password, role) VALUES ($1, $2, $3, $4)', [username, full_name, hashedPassword, role]);
+        await pool.query('INSERT INTO users (username, password, role) VALUES ($1, $2, $3)', [username, hashedPassword, role]);
         res.redirect('/login');
     } catch (err) {
         console.error(err);
-        res.send('Ошибка при регистрации.');
+        res.status(400).send('Ошибка при регистрации.');
     }
 });
 
@@ -65,7 +61,6 @@ router.post('/login', async (req, res) => {
                 console.log('token created: ', token);
 
                 setAuthToken(res, token);
-                // res.json({ token });
                 res.redirect('/dashboard');
             } else {
                 res.status(400).send('Неверный пароль.');
@@ -81,8 +76,13 @@ router.post('/login', async (req, res) => {
 
 
 router.get('/logout', (req, res) => {
-    req.session.destroy();
-    res.redirect('/login');
+    try {
+        req.session.destroy();
+        res.redirect('/login');
+    } catch (error) {
+        res.status(500).send(error.message);
+        console.log(error.message);
+    }
 });
 
 export default router;
