@@ -34,15 +34,15 @@ Body:
 }
 
 `GET http://localhost:3000/dashboard` \
-Headers: \
+Headers:
 {"Authorization": "Bearer YOUR_TOKEN"}
 
 `GET http://localhost:3000/tasks/todo` \
-Headers: \
+Headers:
 {"Authorization": "Bearer YOUR_TOKEN"}
 
 `GET http://localhost:3000/tasks/done` \
-Headers: \
+Headers:
 {"Authorization": "Bearer YOUR_TOKEN"}
 
 `http://localhost:3000/tasks/5/answer` \
@@ -50,22 +50,22 @@ Body:
 {
     "answer": 108
 } \
-Headers: \
+Headers:
 {"Authorization": "Bearer YOUR_TOKEN"}
 
 `DELETE http://localhost:3000/tasks/5/undo` \
-Headers: \
+Headers:
 {"Authorization": "Bearer YOUR_TOKEN"}
 
 
 ### Admin
 
 `GET http://localhost:3000/admin` \
-Headers: \
+Headers:
 {"Authorization": "Bearer YOUR_TOKEN"}
 
 `GET http://localhost:3000/tasks` \
-Headers: \
+Headers:
 {"Authorization": "Bearer YOUR_TOKEN"}
 
 `POST http://localhost:3000/tasks` \
@@ -75,7 +75,7 @@ Body:
     "task_text": "Найдите площадь квадрата, если его сторона равна 4",
     "answer": 16
 } \
-Headers: \
+Headers:
 {"Authorization": "Bearer YOUR_TOKEN"}
 
 `POST http://localhost:3000/tasks/6` \
@@ -85,9 +85,9 @@ Body:
     "task_text": "Найдите площадь квадрата, если его сторона равна 4.",
     "answer": 16
 } \
-Headers: \
+Headers:
 {"Authorization": "Bearer YOUR_TOKEN"}
 
 `DELETE http://localhost:3000/tasks/6` \
-Headers: \
+Headers:
 {"Authorization": "Bearer YOUR_TOKEN"}
