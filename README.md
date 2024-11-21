@@ -45,7 +45,7 @@ Headers: \
 Headers: \
 {"Authorization": "Bearer YOUR_TOKEN"}
 
-`http://localhost:3000/tasks/5/answer`
+`http://localhost:3000/tasks/5/answer` \
 Body:
 {
     "answer": 108
@@ -68,7 +68,7 @@ Headers: \
 Headers: \
 {"Authorization": "Bearer YOUR_TOKEN"}
 
-`POST http://localhost:3000/tasks`
+`POST http://localhost:3000/tasks` \
 Создать задачу \
 Body:
 {
@@ -78,7 +78,7 @@ Body:
 Headers: \
 {"Authorization": "Bearer YOUR_TOKEN"}
 
-`POST http://localhost:3000/tasks/6`
+`POST http://localhost:3000/tasks/6` \
 Изменить задачу \
 Body:
 {
